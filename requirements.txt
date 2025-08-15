@@ -14,4 +14,6 @@ types-PyYAML
 scipy
 Flask
 Flask-Cors
+boto3
+
 -e .
