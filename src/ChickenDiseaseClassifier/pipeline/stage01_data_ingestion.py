@@ -9,15 +9,16 @@ class DataIngestionTrainingPipeline:
         pass
 
     def main(self):
-        config = ConfigurationManager()
-        aws_config = config.get_aws_config()  # You’d create this method similar to get_data_ingestion_config
-        data_ingestion_config = config.get_data_ingestion_config()
+        cfg = ConfigurationManager()
+        di_cfg = cfg.get_data_ingestion_config()
 
-        data_ingestion = DataIngestion(
-            config=data_ingestion_config,
-            aws_config=aws_config
-        )
-        data_ingestion.download_file()
+    # Option A: Local file already present at data_ingestion.local_data_file
+    # Ensure artifacts/data_ingestion/data.zip exists before running.
+        data_ingestion = DataIngestion(config=di_cfg, aws_config=None)
+    # Optionally: If using S3, uncomment the next two lines and ensure get_aws_config works.
+    # aws_cfg = cfg.get_aws_config()
+    # data_ingestion = DataIngestion(config=di_cfg, aws_config=aws_cfg); data_ingestion.download_file_from_s3()
+
         data_ingestion.extract_zip_file()
 
 

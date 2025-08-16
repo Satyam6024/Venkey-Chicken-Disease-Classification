@@ -16,14 +16,12 @@ class Training:
         self.validation_steps = None
 
     def get_base_model(self):
-        # Load without compiled objects to avoid graph-mode artifacts restored from disk
         self.model = tf.keras.models.load_model(
             self.config.updated_base_model_path,
             compile=False
         )
-        # Recompile cleanly in eager-friendly way
         self.model.compile(
-            optimizer=tf.keras.optimizers.Adam(),
+            optimizer=tf.keras.optimizers.Adam(learning_rate=self.config.learning_rate),
             loss="categorical_crossentropy",
             metrics=["accuracy"]
         )
@@ -33,18 +31,14 @@ class Training:
             rescale=1./255,
             validation_split=0.20
         )
-
         dataflow_kwargs = dict(
             target_size=self.config.params_image_size[:-1],
             batch_size=self.config.params_batch_size,
             interpolation="bilinear"
         )
 
-        valid_datagenerator = tf.keras.preprocessing.image.ImageDataGenerator(
-            **datagenerator_kwargs
-        )
-
-        self.valid_generator = valid_datagenerator.flow_from_directory(
+        valid_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**datagenerator_kwargs)
+        self.valid_generator = valid_datagen.flow_from_directory(
             directory=self.config.training_data,
             subset="validation",
             shuffle=False,
@@ -52,7 +46,7 @@ class Training:
         )
 
         if self.config.params_is_augmentation:
-            train_datagenerator = tf.keras.preprocessing.image.ImageDataGenerator(
+            train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
                 rotation_range=40,
                 horizontal_flip=True,
                 width_shift_range=0.2,
@@ -62,9 +56,9 @@ class Training:
                 **datagenerator_kwargs
             )
         else:
-            train_datagenerator = valid_datagenerator
+            train_datagen = valid_datagen
 
-        self.train_generator = train_datagenerator.flow_from_directory(
+        self.train_generator = train_datagen.flow_from_directory(
             directory=self.config.training_data,
             subset="training",
             shuffle=True,
@@ -76,22 +70,20 @@ class Training:
         model.save(path)
 
     def train(self, callback_list: list):
-        # Sanity checks
         print("Eager at fit:", tf.executing_eagerly())
-        xb, yb = next(self.train_generator)
-        import numpy as np
-        print("Train batch types:", type(xb), isinstance(xb, np.ndarray))
 
         self.steps_per_epoch = self.train_generator.samples // self.train_generator.batch_size
         self.validation_steps = self.valid_generator.samples // self.valid_generator.batch_size
 
+        # Do not pass workers/use_multiprocessing/max_queue_size to avoid warnings with this adapter
         self.model.fit(
             self.train_generator,
             epochs=self.config.params_epochs,
             steps_per_epoch=self.steps_per_epoch,
             validation_steps=self.validation_steps,
             validation_data=self.valid_generator,
-            callbacks=callback_list
+            callbacks=callback_list,
+            verbose=1
         )
 
         self.save_model(
