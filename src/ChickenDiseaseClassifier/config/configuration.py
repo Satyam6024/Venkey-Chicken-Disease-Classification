@@ -5,7 +5,8 @@ from ChickenDiseaseClassifier.entity.config_entity import (DataIngestionConfig,
                                                            AWSConfig, 
                                                            PrepareBaseModelConfig, 
                                                            PrepareCallbacksConfig,
-                                                           TrainingConfig)
+                                                           TrainingConfig,
+                                                           EvaluationConfig)
 
 
 class ConfigurationManager:
@@ -88,4 +89,15 @@ class ConfigurationManager:
             params_is_augmentation=bool(params.AUGMENTATION),
             params_image_size=list(params.IMAGE_SIZE),
             learning_rate=float(params.LEARNING_RATE),
+        )
+    
+
+    def get_validation_config(self) -> EvaluationConfig:
+        # Align with training outputs and data dir
+        return EvaluationConfig(
+            path_of_model=Path("artifacts/training/model.keras"),
+            training_data=Path("artifacts/data_ingestion/Chicken-fecal-images"),
+            all_params=self.params,
+            params_image_size=self.params.IMAGE_SIZE,
+            params_batch_size=self.params.BATCH_SIZE
         )
