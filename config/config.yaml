@@ -11,6 +11,7 @@ data_ingestion:
   file_key: Chicken Disease Classification.zip
   local_data_file: artifacts/data_ingestion/data.zip
   unzip_dir: artifacts/data_ingestion
+  target_dir_name: Chicken-fecal-images
 
 
 
