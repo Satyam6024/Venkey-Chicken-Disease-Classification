@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Prediction Result | Chicken Disease Classifier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Prediction Result</h1>
+
+      <div class="result-card">
+        <div class="result-info">
+          <p><strong>File:</strong> {{ filename }}</p>
+          <p><strong>Predicted:</strong> {{ predicted_name }} ({{ predicted_key }})</p>
+          <p><strong>Confidence:</strong> {{ confidence }}</p>
+        </div>
+      </div>
+
+      <div class="probs">
+        <h3>Class probabilities</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Class</th>
+              <th>Probability</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for cls, prob in details.items() %}
+              <tr>
+                <td>{{ cls }}</td>
+                <td>{{ prob }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="actions">
+        <a class="btn" href="{{ url_for('index') }}">Try another image</a>
+      </div>
+    </div>
+  </body>
+</html>

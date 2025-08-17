@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Chicken Disease Classifier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Chicken Disease Classifier</h1>
+      <p>Upload a chicken fecal image to predict the disease class.</p>
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="flash">
+            {% for msg in messages %}
+              <div>{{ msg }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <form action="{{ url_for('predict') }}" method="post" enctype="multipart/form-data" class="upload-form">
+        <input type="file" name="file" accept="image/*" required />
+        <button type="submit">Predict</button>
+      </form>
+
+      <div class="notes">
+        <h3>Supported classes</h3>
+        <ul>
+          <li>Coccidiosis</li>
+          <li>Healthy</li>
+          <li>Newcastle disease</li>
+          <li>PCR Coccidiosis</li>
+          <li>PCR Healthy</li>
+          <li>PCR Newcastle disease</li>
+          <li>PCR Salmonella</li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>
