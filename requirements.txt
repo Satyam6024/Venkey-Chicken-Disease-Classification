@@ -16,5 +16,6 @@ Flask
 Flask-Cors
 boto3
 protobuf==5.28.3
+pillow
 
 -e .
