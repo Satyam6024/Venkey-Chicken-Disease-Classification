@@ -1,5 +1,6 @@
 from ChickenDiseaseClassifier.constants import *
 import os
+from pathlib import Path
 from ChickenDiseaseClassifier.utils.common import read_yaml, create_directories
 from ChickenDiseaseClassifier.entity.config_entity import (DataIngestionConfig,
                                                            AWSConfig, 
